@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <!-- футер с поиском -->
     <v-card-title>
       <v-text-field
         v-model="searchText"
@@ -12,6 +13,7 @@
       />
       <v-btn class="ml-5 mt-3" @click="useSearch">Найти</v-btn>
     </v-card-title>
+    <!-- основная таблица -->
     <v-data-table
       v-model="selected"
       :headers="headers"
@@ -53,6 +55,7 @@
           </tr>
         </tbody>
       </template>
+      <!-- кнопка в футере для удаления выделенных айтемов -->
       <template #footer.prepend>
         <v-icon @click="itemCheckedDelete" class="ml-2"> mdi-delete </v-icon>
       </template>
@@ -66,10 +69,15 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      //поиск для v-data-table
       search: '',
+      //промежуточная переменная поиска для реализации кнопки найти и нажатий entr exc
       searchText: '',
+      //массви выделенных айтемов
       selected: [],
+      //основной массив с айтемами
       items: [],
+      //массив для v-data-table с хедерами
       headers: [
         {
           text: 'Название',
@@ -93,9 +101,11 @@ export default {
     }
   },
   mounted() {
+    //получение api
     this.fetchItems()
   },
   methods: {
+    //функция для получения api
     async fetchItems() {
       try {
         const response = await axios.get('https://jsonplaceholder.org/posts')
@@ -104,17 +114,21 @@ export default {
         console.log(e)
       }
     },
+    // удаление одного айтема
     itemDelete(item) {
       this.items = this.items.filter((itm) => itm.id !== item.id)
     },
+    // удаление выделенных айтемов кнопкой в футере
     itemCheckedDelete() {
       for (let i = 0; i < this.selected.length; i++) {
         this.items = this.items.filter((itm) => itm.id !== this.selected[i].id)
       }
     },
+    //поиск по нажатию кнопки найти в хедере или по нажатию entr
     useSearch() {
       this.search = this.searchText
     },
+    //отмена поиска по нажатию esc
     clearSearch() {
       this.search = ''
     },
@@ -123,6 +137,7 @@ export default {
 </script>
 
 <style>
+/* сдвиг пагинации в лево */
 .v-application--is-ltr .v-data-footer__select {
   margin-left: 40px;
   margin-right: 15px;
