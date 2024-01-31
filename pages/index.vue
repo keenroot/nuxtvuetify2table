@@ -37,7 +37,7 @@
             </td>
             <td>
               {{ item.title }}
-              <v-icon class="ml-2"> mdi-pencil </v-icon>
+              <v-icon class="ml-2" @click="editItem(item)"> mdi-pencil </v-icon>
             </td>
             <td>
               <v-icon class="mr-2"> mdi-clock-time-four-outline </v-icon>
@@ -45,7 +45,6 @@
             </td>
             <td>
               <v-icon class="mr-2"> mdi-clock-plus-outline </v-icon>
-              <mdicon name="hamburger" />
               {{ item.updatedAt }}
             </td>
             <td>
@@ -55,11 +54,20 @@
           </tr>
         </tbody>
       </template>
+
       <!-- кнопка в футере для удаления выделенных айтемов -->
       <template #footer.prepend>
         <v-icon @click="itemCheckedDelete" class="ml-2"> mdi-delete </v-icon>
       </template>
     </v-data-table>
+    <v-dialog v-model="dialog" max-width="700px">
+      <v-card class="px-5 pb-5 pt-2" align="right">
+        <v-text-field v-model="editedItem.title" />
+        <v-textarea v-model="editedItem.content" />
+        <v-btn @click="confirmEdit">Сахранить</v-btn>
+        <v-btn @click="cancelEdit" class="ml-2">Отмена</v-btn>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -69,6 +77,11 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      //редактируемый элемент
+      editedItemIndex: 0,
+      editedItem: { content: '', title: '' },
+      //оторбражение диалога для редактирования
+      dialog: false,
       //поиск для v-data-table
       search: '',
       //промежуточная переменная поиска для реализации кнопки найти и нажатий entr exc
@@ -131,6 +144,20 @@ export default {
     //отмена поиска по нажатию esc
     clearSearch() {
       this.search = ''
+    },
+    editItem(item) {
+      this.dialog = true
+      this.editedItem.title = item.title
+      this.editedItem.content = item.content
+      this.editedItemIndex = this.items.indexOf(item)
+    },
+    confirmEdit() {
+      this.items[this.editedItemIndex].title = this.editedItem.title
+      this.items[this.editedItemIndex].content = this.editedItem.content
+      this.dialog = false
+    },
+    cancelEdit() {
+      this.dialog = false
     },
   },
 }
