@@ -48,7 +48,9 @@
               {{ item.updatedAt }}
             </td>
             <td>
-              <v-icon class="me-2"> mdi-folder-arrow-up </v-icon>
+              <v-icon class="me-2" @click="saveToFile(item)">
+                mdi-folder-arrow-up
+              </v-icon>
               <v-icon @click="itemDelete(item)"> mdi-delete </v-icon>
             </td>
           </tr>
@@ -79,7 +81,7 @@ export default {
     return {
       //редактируемый элемент
       editedItemIndex: 0,
-      editedItem: { content: '', title: '' },
+      editedItem: { content: '', title: '', updatedAt: '' },
       //оторбражение диалога для редактирования
       dialog: false,
       //поиск для v-data-table
@@ -145,19 +147,44 @@ export default {
     clearSearch() {
       this.search = ''
     },
+    //получения айтема для редактирования, поиск индекса айтема в общем масстве
     editItem(item) {
       this.dialog = true
       this.editedItem.title = item.title
       this.editedItem.content = item.content
       this.editedItemIndex = this.items.indexOf(item)
     },
+    //применение редактирования
     confirmEdit() {
+      //получение и форматирование даты
+      let currentDate = new Date().toLocaleString().replace(/[.]/g, '/')
+      currentDate = currentDate.replace(',', '')
+      //присваивание значений вобект айтема в основном массиве по индексу
       this.items[this.editedItemIndex].title = this.editedItem.title
+      this.items[this.editedItemIndex].updatedAt = currentDate
       this.items[this.editedItemIndex].content = this.editedItem.content
       this.dialog = false
     },
+    //отмена редактирования
     cancelEdit() {
       this.dialog = false
+    },
+    //сохранение айтема в файл
+    saveToFile(item) {
+      let data = new Blob([item.title + '\n\n' + item.content], {
+        type: 'text/plain',
+      })
+
+      let a = document.createElement('a')
+      document.body.appendChild(a)
+      a.style = 'display: none'
+
+      let url = window.URL.createObjectURL(data)
+      a.href = url
+      a.download = item.slug
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
     },
   },
 }
