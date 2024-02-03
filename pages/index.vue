@@ -12,6 +12,9 @@
         @keydown.esc="clearSearch"
       />
       <v-btn class="ml-5 mt-3" @click="useSearch">Найти</v-btn>
+      <v-btn class="ml-5 mt-3" @click="useSearchLastEdited"
+        >Отредаетированный</v-btn
+      >
     </v-card-title>
     <!-- основная таблица -->
     <v-data-table
@@ -142,6 +145,11 @@ export default {
     //поиск по нажатию кнопки найти в хедере или по нажатию entr
     useSearch() {
       this.search = this.searchText
+    },
+    //поиск последнего отредактированного айтема
+    useSearchLastEdited() {
+      this.searchText = this.editedItem.title
+      this.search = this.editedItem.title
     },
     //отмена поиска по нажатию esc
     clearSearch() {
